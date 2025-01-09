@@ -9,7 +9,6 @@ import jakarta.persistence.Id
 class Concert(
     @Id
     val id: String = TsidCreator.getTsid().toString(),
-    var name: String,
-    var price: Int
+    var name: String
 ) : BaseModel() {
 }
