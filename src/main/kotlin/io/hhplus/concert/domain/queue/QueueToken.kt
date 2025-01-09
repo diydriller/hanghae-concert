@@ -17,7 +17,7 @@ class QueueToken(
     val expiration: LocalDateTime,
 ) : BaseModel() {
     @Enumerated(EnumType.STRING)
-    private var status: Status = Status.ACTIVE
+    var status: Status = Status.INACTIVE
 
     enum class Status {
         ACTIVE, INACTIVE
