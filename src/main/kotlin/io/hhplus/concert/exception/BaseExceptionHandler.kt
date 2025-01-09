@@ -35,10 +35,14 @@ class BaseExceptionHandler {
     @ExceptionHandler(NotFoundException::class)
     fun handleNotFoundException(ex: NotFoundException): ResponseEntity<BaseResponse<Unit>> {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-            BaseResponse(
-                isSuccess = false,
-                message = ex.notFoundStatus.message
-            )
+            BaseResponse(ex.notFoundStatus)
+        )
+    }
+
+    @ExceptionHandler(ConflictException::class)
+    fun handleConflictException(ex: ConflictException): ResponseEntity<BaseResponse<Unit>> {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+            BaseResponse(ex.conflictStatus)
         )
     }
 }
