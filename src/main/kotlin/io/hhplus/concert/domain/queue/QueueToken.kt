@@ -22,4 +22,8 @@ class QueueToken(
     enum class Status {
         ACTIVE, INACTIVE
     }
+
+    fun activate(){
+        this.status = Status.ACTIVE
+    }
 }
