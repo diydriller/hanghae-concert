@@ -11,7 +11,7 @@ import jakarta.persistence.Id
 class Reservation(
     @Id
     val id: String = TsidCreator.getTsid().toString(),
-    val concertId: String,
+    val concertScheduleId: String,
     val seatId: String,
     val userId: String
 ) : BaseModel() {

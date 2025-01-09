@@ -32,4 +32,8 @@ class ConcertReaderImpl(
     override fun findReservableSeat(schedule: ConcertSchedule, date: LocalDate): List<Seat> {
         return seatRepository.findReservableSeat(schedule, date)
     }
+
+    override fun findSeat(seatId: String): Seat? {
+        return seatRepository.findSeatById(seatId)
+    }
 }

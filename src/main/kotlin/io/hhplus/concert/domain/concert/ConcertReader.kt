@@ -11,4 +11,6 @@ interface ConcertReader {
     fun findConcertSchedule(scheduleId: String): ConcertSchedule?
 
     fun findReservableSeat(schedule: ConcertSchedule, date: LocalDate): List<Seat>
+
+    fun findSeat(seatId: String): Seat?
 }

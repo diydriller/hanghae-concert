@@ -14,4 +14,7 @@ interface SeatRepository : JpaRepository<Seat, String> {
                 "AND sc.reservedSeatCount < sc.totalSeatCount "
     )
     fun findReservableSeat(schedule: ConcertSchedule, date: LocalDate): List<Seat>
+
+    @Query("SELECT s FROM Seat s WHERE s.id = :seatId ")
+    fun findSeatById(seatId: String): Seat?
 }
