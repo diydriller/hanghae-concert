@@ -1,0 +1,62 @@
+### 콘서트 조회 요청
+GET http://localhost:8080/concert
+
+## 응답
+{
+  "message": "요청에 성공하였습니다.",
+  "data": [
+    {
+      "id": 1,
+      "name": "검정치마 연말 콘서트"
+    },
+    {
+      "id": 2,
+      "name": "10cm 콘서트"
+    }
+  ],
+  "success": true
+}
+
+===
+
+### 콘서트 스케줄 조회 요청
+GET http://localhost:8080/concert/1/schedule
+
+## 응답
+{
+  "message": "요청에 성공하였습니다.",
+  "data": [
+    {
+      "id": 1,
+      "date": "2025-01-10T13:10:00"
+    },
+    {
+      "id": 2,
+      "date": "2025-01-15T18:00:00"
+    }
+  ],
+  "success": true
+}
+
+===
+
+### 콘서트 좌석 조회 요청
+GET http://localhost:8080/concert/1/schedules/1/seats
+
+## 응답
+{
+  "message": "요청에 성공하였습니다.",
+  "data": [
+    {
+      "id": 1,
+      "number": 30,
+      "price": 100000
+    },
+    {
+      "id": 2,
+      "number": 100,
+      "price": 140000
+    }
+  ],
+  "success": true
+}

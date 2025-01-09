@@ -1,0 +1,29 @@
+### 대기열 생성
+POST http://localhost:8080/queue/create
+
+## 응답
+{
+  "message": "요청에 성공하였습니다.",
+  "data": {
+    "id": "959c5867-b858-4f35-a01c-3c71c9079f27",
+    "expiration": "2025-01-03T09:05:18.4743347",
+    "position": 1
+  },
+  "success": true
+}
+
+===
+
+### 대기열 조회
+GET http://localhost:8080/queue/status
+
+## 응답
+{
+  "message": "요청에 성공하였습니다.",
+  "data": {
+    "id": "d6dcb4bd-0776-4f53-ab2d-f3ddf420eec5",
+    "expiration": "2025-01-03T09:07:39.9542476",
+    "position": 1
+  },
+  "success": true
+}

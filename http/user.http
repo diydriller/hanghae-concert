@@ -1,0 +1,30 @@
+### 포인트 충전
+POST http://localhost:8080/user/point
+Content-Type: application/json
+
+{
+  "amount": 1000
+}
+
+## 응답
+{
+  "message": "요청에 성공하였습니다.",
+  "data": {
+    "point": 500000
+  },
+  "success": true
+}
+
+===
+
+### 포인트 조회
+GET http://localhost:8080/user/point
+
+## 응답
+{
+  "message": "요청에 성공하였습니다.",
+  "data": {
+    "point": 200000
+  },
+  "success": true
+}
