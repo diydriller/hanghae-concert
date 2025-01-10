@@ -42,6 +42,7 @@ class ReservationService(
             seatId = seat.id,
             userId = command.userId
         )
+        reservation.reserve()
         return reservationStore.saveReservation(reservation)
     }
 }
