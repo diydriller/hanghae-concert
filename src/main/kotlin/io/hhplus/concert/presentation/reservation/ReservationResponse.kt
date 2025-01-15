@@ -1,10 +1,17 @@
 package io.hhplus.concert.presentation.reservation
 
-import java.time.LocalDateTime
+import io.hhplus.concert.domain.reservation.Reservation
 
 class ReservationResponse {
     data class ReserveConcert(
-        val id: Long,
-        val expiration: LocalDateTime
-    )
+        val id: String
+    ) {
+        companion object {
+            fun fromEntity(reservation: Reservation): ReserveConcert {
+                return ReserveConcert(
+                    id = reservation.id
+                )
+            }
+        }
+    }
 }

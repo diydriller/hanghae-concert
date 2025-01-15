@@ -1,21 +1,36 @@
 package io.hhplus.concert.presentation.concert
 
-import java.time.LocalDateTime
+import io.hhplus.concert.domain.concert.ConcertSchedule
+import io.hhplus.concert.domain.concert.Seat
 
 class ConcertResponse {
-    data class GetConcertInfo(
-        val id: Long,
-        val name: String
-    )
-
     data class GetConcertScheduleInfo(
-        val id: Long,
-        val date: LocalDateTime
-    )
+        val id: String,
+        val date: String
+    ) {
+        companion object {
+            fun fromEntity(concertSchedule: ConcertSchedule): GetConcertScheduleInfo {
+                return GetConcertScheduleInfo(
+                    concertSchedule.id,
+                    concertSchedule.date.toString()
+                )
+            }
+        }
+    }
 
     data class GetSeatInfo(
-        val id: Long,
+        val id: String,
         val number: Int,
         val price: Int
-    )
+    ) {
+        companion object {
+            fun fromEntity(seat: Seat): GetSeatInfo {
+                return GetSeatInfo(
+                    id = seat.id,
+                    number = seat.number,
+                    price = seat.price
+                )
+            }
+        }
+    }
 }

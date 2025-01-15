@@ -4,7 +4,9 @@ import com.github.f4b6a3.tsid.TsidCreator
 import io.hhplus.concert.domain.BaseModel
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.Table
 
+@Table(name = "payment")
 @Entity
 class Payment(
     @Id

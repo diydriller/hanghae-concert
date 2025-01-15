@@ -1,23 +1,27 @@
 package io.hhplus.concert.presentation.reservation
 
+import io.hhplus.concert.application.reservation.ReservationService
 import io.hhplus.concert.response.BaseResponse
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/reservation")
 @RestController
-class ReservationController {
+class ReservationController(
+    private val reservationService: ReservationService
+) {
     @PostMapping
     fun reserveConcert(
-        @RequestBody request: ReservationRequest.ReserveConcert
-    ): BaseResponse<ReservationResponse.ReserveConcert> {
-        val response = ReservationResponse.ReserveConcert(
-            1L,
-            LocalDateTime.now().plusMinutes(5)
+        @RequestBody request: ReservationRequest.ReserveConcert,
+        @RequestHeader userId: String
+    ): ResponseEntity<BaseResponse<ReservationResponse.ReserveConcert>> {
+        val reservation = reservationService.reserveConcert(request.toCommand(userId))
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            BaseResponse(
+                ReservationResponse.ReserveConcert.fromEntity(reservation)
+            )
         )
-        return BaseResponse(response)
     }
 }

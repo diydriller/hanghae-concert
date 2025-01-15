@@ -27,6 +27,10 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("com.github.f4b6a3:tsid-creator:5.2.6")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation("org.testcontainers:testcontainers:1.19.0")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.0")
+    testImplementation("org.testcontainers:mysql:1.19.0")
 }
 
 tasks.withType<KotlinCompile> {

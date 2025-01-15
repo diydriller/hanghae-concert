@@ -15,6 +15,8 @@ class ConcertSchedule(
     @ManyToOne
     @JoinColumn(name = "concert_id")
     val concert: Concert,
-    val date: LocalDateTime
+    val date: LocalDateTime,
+    val totalSeatCount: Int
 ) : BaseModel() {
+    var reservedSeatCount: Int = 0
 }
