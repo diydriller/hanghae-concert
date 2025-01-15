@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
-class BaseExceptionHandler {
+class GlobalExceptionHandler {
     @ExceptionHandler(BindException::class)
     fun handleValidationExceptions(ex: BindException): ResponseEntity<BaseResponse<Unit>> {
         val errorMessages = ex.bindingResult.fieldErrors
@@ -27,7 +27,7 @@ class BaseExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             BaseResponse(
                 isSuccess = false,
-                message = ex.message
+                message = ex.message!!
             )
         )
     }

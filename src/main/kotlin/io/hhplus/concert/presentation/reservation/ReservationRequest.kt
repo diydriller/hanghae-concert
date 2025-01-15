@@ -11,7 +11,6 @@ class ReservationRequest {
         fun toCommand(userId: String): ReservationCommand {
             return ReservationCommand(
                 userId = userId,
-                tokenId = tokenId,
                 scheduleId = scheduleId,
                 seatId = seatId
             )

@@ -1,7 +1,6 @@
 package io.hhplus.concert.application.reservation
 
 import io.hhplus.concert.domain.concert.ConcertReader
-import io.hhplus.concert.domain.queue.QueueReader
 import io.hhplus.concert.domain.reservation.Reservation
 import io.hhplus.concert.domain.reservation.ReservationReader
 import io.hhplus.concert.domain.reservation.ReservationStore
@@ -16,17 +15,9 @@ class ReservationService(
     private val reservationReader: ReservationReader,
     private val reservationStore: ReservationStore,
     private val concertReader: ConcertReader,
-    private val queueReader: QueueReader
 ) {
     @Transactional
     fun reserveConcert(command: ReservationCommand): Reservation {
-        val token = queueReader.getQueueToken(command.tokenId)
-            ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_TOKEN)
-
-        if (!token.isValid()) {
-            throw ConflictException(BaseResponseStatus.NOT_VALID_TOKEN)
-        }
-
         val schedule = concertReader.findConcertSchedule(command.scheduleId)
             ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_CONCERT_SCHEDULE)
 

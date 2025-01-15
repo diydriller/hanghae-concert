@@ -9,7 +9,6 @@ import io.hhplus.concert.exception.ConflictException
 import io.hhplus.concert.infrastructure.concert.ConcertRepository
 import io.hhplus.concert.infrastructure.concert.ConcertScheduleRepository
 import io.hhplus.concert.infrastructure.concert.SeatRepository
-import io.hhplus.concert.infrastructure.queue.QueueTokenRepository
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,9 +25,6 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
     private lateinit var reservationService: ReservationService
 
     @Autowired
-    private lateinit var queueTokenRepository: QueueTokenRepository
-
-    @Autowired
     private lateinit var concertScheduleRepository: ConcertScheduleRepository
 
     @Autowired
@@ -37,19 +33,10 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
     @Test
     fun `예약함수 호출시 Reservation이 저장되고 반환된다`() {
         // given
-        val tokenId = "0JETAVJVH0SJQ"
         val userId = "0JETAVJVH0SJQ"
         val scheduleId = "0JETAVJVH0SJQ"
         val seatId = "0JETAVJVH0SJQ"
         val concertId = "0JETAVJVH0SJQ"
-
-        val queueToken = QueueToken(
-            id = tokenId,
-            userId = userId,
-            expiration = LocalDateTime.now().plusMinutes(10)
-        )
-        queueToken.status = QueueToken.Status.ACTIVE
-        queueTokenRepository.save(queueToken)
 
         val concert = Concert(
             id = concertId,
@@ -77,7 +64,6 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
         val reservation = reservationService.reserveConcert(
             ReservationCommand(
                 userId = userId,
-                tokenId = tokenId,
                 scheduleId = scheduleId,
                 seatId = seatId
             )
@@ -107,7 +93,6 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
             reservationService.reserveConcert(
                 ReservationCommand(
                     userId = userId,
-                    tokenId = tokenId,
                     scheduleId = scheduleId,
                     seatId = seatId
                 )
@@ -118,19 +103,10 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
     @Test
     fun `같은 예약정보로 예약함수 2번 호출시 ConflictException이 발생한다`() {
         // given
-        val tokenId = "0JETAVJVH0SJK"
         val userId = "0JETAVJVH0SJK"
         val scheduleId = "0JETAVJVH0SJK"
         val seatId = "0JETAVJVH0SJK"
         val concertId = "0JETAVJVH0SJK"
-
-        val queueToken = QueueToken(
-            id = tokenId,
-            userId = userId,
-            expiration = LocalDateTime.now().plusMinutes(10)
-        )
-        queueToken.status = QueueToken.Status.ACTIVE
-        queueTokenRepository.save(queueToken)
 
         val concert = Concert(
             id = concertId,
@@ -158,7 +134,6 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
         reservationService.reserveConcert(
             ReservationCommand(
                 userId = userId,
-                tokenId = tokenId,
                 scheduleId = scheduleId,
                 seatId = seatId
             )
@@ -168,7 +143,6 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
             reservationService.reserveConcert(
                 ReservationCommand(
                     userId = userId,
-                    tokenId = tokenId,
                     scheduleId = scheduleId,
                     seatId = seatId
                 )
