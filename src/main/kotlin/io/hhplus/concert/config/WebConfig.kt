@@ -11,7 +11,8 @@ class WebConfig(
 ) : WebMvcConfigurer {
     private val excludedPaths = listOf(
         "/concert/**",
-        "/queue/**"
+        "/queue/**",
+        "/point/**"
     )
 
     override fun addInterceptors(registry: InterceptorRegistry) {

@@ -14,4 +14,8 @@ class UserPoint(
     val userId: String
 ) : BaseModel() {
     var point: Int = 0
+
+    fun charge(point: Int) {
+        this.point += point
+    }
 }

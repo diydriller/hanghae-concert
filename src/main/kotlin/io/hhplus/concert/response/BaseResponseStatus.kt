@@ -11,5 +11,6 @@ enum class BaseResponseStatus(
     NOT_FOUND_CONCERT_SCHEDULE(false, "콘서트 스케줄을 찾을 수 없습니다."),
     NOT_FOUND_SEAT(false, "좌석을 찾을 수 없습니다."),
     NOT_VALID_TOKEN(false, "유효한 토큰이 아닙니다."),
-    ALREADY_RESERVED(false, "이미 예약했습니다.")
+    ALREADY_RESERVED(false, "이미 예약했습니다."),
+    NOT_FOUND_POINT(false, "유저 포인트를 찾을 수 없습니다.")
 }
