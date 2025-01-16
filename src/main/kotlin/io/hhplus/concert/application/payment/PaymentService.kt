@@ -28,13 +28,13 @@ class PaymentService(
 ) {
     @Transactional
     fun pay(command: PaymentCommand) {
-        val userPoint = pointReader.findPoint(command.userId)
+        val userPoint = pointReader.findPointForUpdate(command.userId)
             ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_POINT)
-        val reservation = reservationReader.findReservation(command.reservationId)
+        val reservation = reservationReader.findReservationForUpdate(command.reservationId)
             ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_RESERVATION)
-        val seat = concertReader.findSeat(reservation.seatId)
+        val seat = concertReader.findSeatForUpdate(reservation.seatId)
             ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_SEAT)
-        val concertSchedule = concertReader.findConcertSchedule(reservation.concertScheduleId)
+        val concertSchedule = concertReader.findConcertScheduleForUpdate(reservation.concertScheduleId)
             ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_CONCERT_SCHEDULE)
 
         if (!seat.isHolding()) {

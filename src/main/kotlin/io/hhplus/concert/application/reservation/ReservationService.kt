@@ -21,7 +21,7 @@ class ReservationService(
         val schedule = concertReader.findConcertSchedule(command.scheduleId)
             ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_CONCERT_SCHEDULE)
 
-        val seat = concertReader.findSeat(command.seatId)
+        val seat = concertReader.findSeatForUpdate(command.seatId)
             ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_SEAT)
 
         reservationReader.findReservation(command.userId, schedule.id, seat.id)?.let { reservation ->

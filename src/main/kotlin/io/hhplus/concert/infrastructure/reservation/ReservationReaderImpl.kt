@@ -18,7 +18,7 @@ class ReservationReaderImpl(
         )
     }
 
-    override fun findReservation(reservationId: String): Reservation? {
-        return reservationRepository.findByIdOrNull(reservationId)
+    override fun findReservationForUpdate(reservationId: String): Reservation? {
+        return reservationRepository.findReservationByIdForUpdate(reservationId)
     }
 }

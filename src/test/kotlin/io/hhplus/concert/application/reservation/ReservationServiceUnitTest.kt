@@ -77,7 +77,7 @@ class ReservationServiceUnitTest {
 
         `when`(concertReader.findConcertSchedule(scheduleId)).then { concertSchedule }
 
-        `when`(concertReader.findSeat(seatId)).then { null }
+        `when`(concertReader.findSeatForUpdate(seatId)).then { null }
 
         // when & then
         assertThrows(NotFoundException::class.java) {
@@ -131,7 +131,7 @@ class ReservationServiceUnitTest {
 
         `when`(concertReader.findConcertSchedule(scheduleId)).then { concertSchedule }
 
-        `when`(concertReader.findSeat(seatId)).then { seat }
+        `when`(concertReader.findSeatForUpdate(seatId)).then { seat }
 
         `when`(reservationReader.findReservation(userId, scheduleId, seatId)).then { reservation }
 
@@ -186,7 +186,7 @@ class ReservationServiceUnitTest {
 
         `when`(concertReader.findConcertSchedule(scheduleId)).then { concertSchedule }
 
-        `when`(concertReader.findSeat(seatId)).then { seat }
+        `when`(concertReader.findSeatForUpdate(seatId)).then { seat }
 
         `when`(reservationReader.findReservation(userId, scheduleId, seatId)).then { null }
 

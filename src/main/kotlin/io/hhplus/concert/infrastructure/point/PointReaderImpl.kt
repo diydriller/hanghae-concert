@@ -11,4 +11,8 @@ class PointReaderImpl(
     override fun findPoint(userId: String): UserPoint? {
         return userPointRepository.findByUserId(userId)
     }
+
+    override fun findPointForUpdate(userId: String): UserPoint? {
+        return userPointRepository.findByUserIdForUpdate(userId)
+    }
 }

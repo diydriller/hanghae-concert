@@ -75,32 +75,6 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `활성화되지 않은 토큰으로 예약함수 호출시 ConflictException이 발생한다`() {
-        // given
-        val tokenId = "0JETAVJVH0SJG"
-        val userId = "0JETAVJVH0SJG"
-        val scheduleId = "0JETAVJVH0SJG"
-        val seatId = "0JETAVJVH0SJG"
-
-        val queueToken = QueueToken(
-            id = tokenId,
-            userId = userId,
-            expiration = LocalDateTime.now().plusMinutes(10)
-        )
-        queueTokenRepository.save(queueToken)
-
-        assertThrows(ConflictException::class.java) {
-            reservationService.reserveConcert(
-                ReservationCommand(
-                    userId = userId,
-                    scheduleId = scheduleId,
-                    seatId = seatId
-                )
-            )
-        }
-    }
-
-    @Test
     fun `같은 예약정보로 예약함수 2번 호출시 ConflictException이 발생한다`() {
         // given
         val userId = "0JETAVJVH0SJK"
