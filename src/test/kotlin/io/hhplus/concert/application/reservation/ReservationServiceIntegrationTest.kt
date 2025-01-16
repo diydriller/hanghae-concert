@@ -4,16 +4,18 @@ import io.hhplus.concert.config.BaseIntegrationTest
 import io.hhplus.concert.domain.concert.Concert
 import io.hhplus.concert.domain.concert.ConcertSchedule
 import io.hhplus.concert.domain.concert.Seat
-import io.hhplus.concert.domain.queue.QueueToken
 import io.hhplus.concert.exception.ConflictException
 import io.hhplus.concert.infrastructure.concert.ConcertRepository
 import io.hhplus.concert.infrastructure.concert.ConcertScheduleRepository
 import io.hhplus.concert.infrastructure.concert.SeatRepository
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 
 @SpringBootTest
@@ -122,5 +124,62 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
                 )
             )
         }
+    }
+
+    @Test
+    fun `2명이 동시에 같은 좌석 정보로 예약함수를 호출하면 1명만 성공하고 1명은 실패한다`() {
+        // given
+        val userIdList = listOf("0JETAVJVH0SJP", "0JETADJVH0SJP")
+        val scheduleId = "0JETAVJVH0SJP"
+        val seatId = "0JETAVJVH0SJP"
+        val concertId = "0JETAVJVH0SJP"
+
+        val concert = Concert(
+            id = concertId,
+            name = "검정치마 콘서트"
+        )
+        concertRepository.save(concert)
+
+        val concertSchedule = ConcertSchedule(
+            id = scheduleId,
+            concert = concert,
+            date = LocalDateTime.of(2025, 2, 20, 18, 0),
+            totalSeatCount = 20
+        )
+        concertScheduleRepository.save(concertSchedule)
+
+        val seat = Seat(
+            id = seatId,
+            number = 1,
+            price = 12000,
+            concertSchedule = concertSchedule
+        )
+        seatRepository.save(seat)
+
+        // when
+        val taskCount = 2
+        val successCount = AtomicInteger(0)
+        val failureCount = AtomicInteger(0)
+        val futureArray = Array(taskCount) { index ->
+            CompletableFuture.runAsync {
+                try {
+                    reservationService.reserveConcert(
+                        ReservationCommand(
+                            userIdList[index % userIdList.size],
+                            scheduleId,
+                            seatId
+                        )
+                    )
+                    successCount.incrementAndGet()
+                } catch (e: Exception) {
+                    failureCount.incrementAndGet()
+                }
+            }
+        }
+        CompletableFuture.allOf(*futureArray).join()
+
+        // then
+        Assertions.assertEquals(1, successCount.get())
+        Assertions.assertEquals(1, failureCount.get())
     }
 }
