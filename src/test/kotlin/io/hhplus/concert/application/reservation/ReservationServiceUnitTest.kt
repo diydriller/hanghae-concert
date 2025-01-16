@@ -99,6 +99,7 @@ class ReservationServiceUnitTest {
         val seatId = "0JETAVJVH0SJQ"
         val concertId = "0JETAVJVH0SJQ"
         val reservationId = "0JETAVJVH0SJQ"
+        val price = 12000
 
         val concert = Concert(
             id = concertId,
@@ -115,7 +116,7 @@ class ReservationServiceUnitTest {
         val seat = Seat(
             id = seatId,
             number = 1,
-            price = 12000,
+            price = price,
             concertSchedule = concertSchedule
         )
 
@@ -123,8 +124,10 @@ class ReservationServiceUnitTest {
             id = reservationId,
             concertScheduleId = scheduleId,
             seatId = seatId,
-            userId = userId
+            userId = userId,
+            price = price
         )
+        reservation.status = Reservation.Status.RESERVED
 
         `when`(concertReader.findConcertSchedule(scheduleId)).then { concertSchedule }
 
@@ -152,6 +155,7 @@ class ReservationServiceUnitTest {
         val seatId = "0JETAVJVH0SJQ"
         val concertId = "0JETAVJVH0SJQ"
         val reservationId = "0JETAVJVH0SJQ"
+        val price = 12000
 
         val concert = Concert(
             id = concertId,
@@ -168,7 +172,7 @@ class ReservationServiceUnitTest {
         val seat = Seat(
             id = seatId,
             number = 1,
-            price = 12000,
+            price = price,
             concertSchedule = concertSchedule
         )
 
@@ -176,7 +180,8 @@ class ReservationServiceUnitTest {
             id = reservationId,
             concertScheduleId = scheduleId,
             seatId = seatId,
-            userId = userId
+            userId = userId,
+            price = price
         )
 
         `when`(concertReader.findConcertSchedule(scheduleId)).then { concertSchedule }

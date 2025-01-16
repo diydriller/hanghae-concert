@@ -24,14 +24,17 @@ class ReservationService(
         val seat = concertReader.findSeat(command.seatId)
             ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_SEAT)
 
-        reservationReader.findReservation(command.userId, schedule.id, seat.id)?.let {
-            throw ConflictException(BaseResponseStatus.ALREADY_RESERVED)
+        reservationReader.findReservation(command.userId, schedule.id, seat.id)?.let { reservation ->
+            if (reservation.isReserved()) throw ConflictException(BaseResponseStatus.ALREADY_RESERVED)
         }
+
+        seat.hold()
 
         val reservation = Reservation(
             concertScheduleId = schedule.id,
             seatId = seat.id,
-            userId = command.userId
+            userId = command.userId,
+            price = seat.price
         )
         reservation.reserve()
         return reservationStore.saveReservation(reservation)
