@@ -19,6 +19,6 @@ interface ReservationRepository : JpaRepository<Reservation, String> {
     ): Reservation?
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT r FROM Reservation r WHERE r.id = :resercationId ")
+    @Query("SELECT r FROM Reservation r WHERE r.id = :reservationId ")
     fun findReservationByIdForUpdate(reservationId: String): Reservation?
 }
