@@ -34,7 +34,7 @@ class ReservationDomainService(
             seat.expire()
             throw ConflictException(BaseResponseStatus.NOT_HOLDING_SEAT)
         }
-        seat.status = Seat.Status.RESERVED
+        seat.status = Status.RESERVED
         reservation.status = Reservation.Status.COMPLETED
         concertSchedule.reservedSeatCount++
     }
