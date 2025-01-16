@@ -2,12 +2,11 @@ package io.hhplus.concert.application.payment
 
 import io.hhplus.concert.domain.concert.ConcertReader
 import io.hhplus.concert.domain.concert.ConcertStore
-import io.hhplus.concert.domain.concert.Seat
 import io.hhplus.concert.domain.payment.Payment
 import io.hhplus.concert.domain.payment.PaymentStore
 import io.hhplus.concert.domain.point.PointReader
 import io.hhplus.concert.domain.point.PointStore
-import io.hhplus.concert.domain.reservation.Reservation
+import io.hhplus.concert.domain.reservation.ReservationDomainService
 import io.hhplus.concert.domain.reservation.ReservationReader
 import io.hhplus.concert.domain.reservation.ReservationStore
 import io.hhplus.concert.exception.ConflictException
@@ -24,7 +23,8 @@ class PaymentService(
     private val reservationStore: ReservationStore,
     private val paymentStore: PaymentStore,
     private val concertReader: ConcertReader,
-    private val concertStore: ConcertStore
+    private val concertStore: ConcertStore,
+    private val reservationDomainService: ReservationDomainService
 ) {
     @Transactional
     fun pay(command: PaymentCommand) {
@@ -37,15 +37,7 @@ class PaymentService(
         val concertSchedule = concertReader.findConcertScheduleForUpdate(reservation.concertScheduleId)
             ?: throw NotFoundException(BaseResponseStatus.NOT_FOUND_CONCERT_SCHEDULE)
 
-        if (!seat.isHolding()) {
-            seat.expire()
-            throw ConflictException(BaseResponseStatus.NOT_HOLDING_SEAT)
-        }
-        seat.status = Seat.Status.RESERVED
-
-        reservation.status = Reservation.Status.COMPLETED
-
-        concertSchedule.reservedSeatCount++
+        reservationDomainService.complete(seat, reservation, concertSchedule)
 
         userPoint.spend(reservation.price)
         val payment = Payment(

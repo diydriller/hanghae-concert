@@ -23,21 +23,6 @@ class Seat(
 
     var holdExpiration: LocalDateTime? = null
 
-    fun isHolding(): Boolean {
-        return status == Status.HOLD && (holdExpiration != null && holdExpiration!!.isAfter(LocalDateTime.now()))
-    }
-
-    fun hold() {
-        if (isHolding()) {
-            throw ConflictException(BaseResponseStatus.ALREADY_HOLDING_SEAT)
-        }
-        if (status == Status.RESERVED) {
-            throw ConflictException(BaseResponseStatus.ALREADY_RESERVED)
-        }
-        this.status = Status.HOLD
-        this.holdExpiration = LocalDateTime.now().plusMinutes(5)
-    }
-
     fun expire() {
         this.status = Status.IDLE
     }
