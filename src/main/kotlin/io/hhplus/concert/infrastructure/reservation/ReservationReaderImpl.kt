@@ -2,6 +2,7 @@ package io.hhplus.concert.infrastructure.reservation
 
 import io.hhplus.concert.domain.reservation.Reservation
 import io.hhplus.concert.domain.reservation.ReservationReader
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,5 +16,9 @@ class ReservationReaderImpl(
             seatId,
             Reservation.Status.RESERVED
         )
+    }
+
+    override fun findReservationForUpdate(reservationId: String): Reservation? {
+        return reservationRepository.findReservationByIdForUpdate(reservationId)
     }
 }

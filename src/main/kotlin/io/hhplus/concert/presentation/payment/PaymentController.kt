@@ -1,24 +1,25 @@
 package io.hhplus.concert.presentation.payment
 
+import io.hhplus.concert.application.payment.PaymentCommand
+import io.hhplus.concert.application.payment.PaymentService
 import io.hhplus.concert.response.BaseResponse
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
+import io.hhplus.concert.response.BaseResponseStatus
+import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/payment")
 @RestController
-class PaymentController {
-    @PostMapping("")
+class PaymentController(
+    private val paymentService: PaymentService
+) {
+    @PostMapping
     fun pay(
-        @RequestBody payRequest: PaymentRequest.Pay
-    ): BaseResponse<PaymentResponse.Pay> {
-        val response = PaymentResponse.Pay(
-            1L,
-            2000,
-            LocalDateTime.now()
+        @RequestHeader userId: String,
+        @RequestBody request: PaymentRequest.Pay
+    ): BaseResponse<Unit> {
+        paymentService.pay(PaymentCommand(
+            userId = userId,
+            reservationId = request.reservationId)
         )
-        return BaseResponse(response)
+        return BaseResponse(BaseResponseStatus.SUCCESS)
     }
 }

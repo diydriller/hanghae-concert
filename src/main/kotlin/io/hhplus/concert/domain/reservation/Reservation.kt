@@ -11,20 +11,23 @@ class Reservation(
     val id: String = TsidCreator.getTsid().toString(),
     val concertScheduleId: String,
     val seatId: String,
-    val userId: String
+    val userId: String,
+    val price: Int
 ) : BaseModel() {
     @Enumerated(EnumType.STRING)
     var status: Status = Status.PENDING
 
+    fun reserve() {
+        this.status = Status.RESERVED
+    }
+
+    fun isReserved(): Boolean {
+        return this.status == Status.RESERVED
+    }
+
     enum class Status {
         PENDING,
         RESERVED,
-        COMPLETED,
-        EXPIRED,
-        CANCELED
-    }
-
-    fun reserve() {
-        this.status = Status.RESERVED
+        COMPLETED
     }
 }
