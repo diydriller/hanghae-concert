@@ -24,6 +24,10 @@ class QueueToken(
         this.status = Status.ACTIVE
     }
 
+    fun deactivate(){
+        this.status = Status.INACTIVE
+    }
+
     fun isValid(): Boolean {
         return status == Status.ACTIVE && expiration.isAfter(LocalDateTime.now())
     }

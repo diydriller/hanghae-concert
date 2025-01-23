@@ -4,17 +4,18 @@ import io.hhplus.concert.config.BaseIntegrationTest
 import io.hhplus.concert.domain.concert.Concert
 import io.hhplus.concert.domain.concert.ConcertSchedule
 import io.hhplus.concert.domain.concert.Seat
-import io.hhplus.concert.domain.queue.QueueToken
 import io.hhplus.concert.exception.ConflictException
 import io.hhplus.concert.infrastructure.concert.ConcertRepository
 import io.hhplus.concert.infrastructure.concert.ConcertScheduleRepository
 import io.hhplus.concert.infrastructure.concert.SeatRepository
-import io.hhplus.concert.infrastructure.queue.QueueTokenRepository
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 
 @SpringBootTest
@@ -26,9 +27,6 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
     private lateinit var reservationService: ReservationService
 
     @Autowired
-    private lateinit var queueTokenRepository: QueueTokenRepository
-
-    @Autowired
     private lateinit var concertScheduleRepository: ConcertScheduleRepository
 
     @Autowired
@@ -37,19 +35,10 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
     @Test
     fun `예약함수 호출시 Reservation이 저장되고 반환된다`() {
         // given
-        val tokenId = "0JETAVJVH0SJQ"
         val userId = "0JETAVJVH0SJQ"
         val scheduleId = "0JETAVJVH0SJQ"
         val seatId = "0JETAVJVH0SJQ"
         val concertId = "0JETAVJVH0SJQ"
-
-        val queueToken = QueueToken(
-            id = tokenId,
-            userId = userId,
-            expiration = LocalDateTime.now().plusMinutes(10)
-        )
-        queueToken.status = QueueToken.Status.ACTIVE
-        queueTokenRepository.save(queueToken)
 
         val concert = Concert(
             id = concertId,
@@ -77,7 +66,6 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
         val reservation = reservationService.reserveConcert(
             ReservationCommand(
                 userId = userId,
-                tokenId = tokenId,
                 scheduleId = scheduleId,
                 seatId = seatId
             )
@@ -89,48 +77,12 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `활성화되지 않은 토큰으로 예약함수 호출시 ConflictException이 발생한다`() {
-        // given
-        val tokenId = "0JETAVJVH0SJG"
-        val userId = "0JETAVJVH0SJG"
-        val scheduleId = "0JETAVJVH0SJG"
-        val seatId = "0JETAVJVH0SJG"
-
-        val queueToken = QueueToken(
-            id = tokenId,
-            userId = userId,
-            expiration = LocalDateTime.now().plusMinutes(10)
-        )
-        queueTokenRepository.save(queueToken)
-
-        assertThrows(ConflictException::class.java) {
-            reservationService.reserveConcert(
-                ReservationCommand(
-                    userId = userId,
-                    tokenId = tokenId,
-                    scheduleId = scheduleId,
-                    seatId = seatId
-                )
-            )
-        }
-    }
-
-    @Test
     fun `같은 예약정보로 예약함수 2번 호출시 ConflictException이 발생한다`() {
         // given
-        val tokenId = "0JETAVJVH0SJK"
         val userId = "0JETAVJVH0SJK"
         val scheduleId = "0JETAVJVH0SJK"
         val seatId = "0JETAVJVH0SJK"
         val concertId = "0JETAVJVH0SJK"
-
-        val queueToken = QueueToken(
-            id = tokenId,
-            userId = userId,
-            expiration = LocalDateTime.now().plusMinutes(10)
-        )
-        queueToken.status = QueueToken.Status.ACTIVE
-        queueTokenRepository.save(queueToken)
 
         val concert = Concert(
             id = concertId,
@@ -158,7 +110,6 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
         reservationService.reserveConcert(
             ReservationCommand(
                 userId = userId,
-                tokenId = tokenId,
                 scheduleId = scheduleId,
                 seatId = seatId
             )
@@ -168,11 +119,67 @@ class ReservationServiceIntegrationTest : BaseIntegrationTest() {
             reservationService.reserveConcert(
                 ReservationCommand(
                     userId = userId,
-                    tokenId = tokenId,
                     scheduleId = scheduleId,
                     seatId = seatId
                 )
             )
         }
+    }
+
+    @Test
+    fun `2명이 동시에 같은 좌석 정보로 예약함수를 호출하면 1명만 성공하고 1명은 실패한다`() {
+        // given
+        val userIdList = listOf("0JETAVJVH0SJP", "0JETADJVH0SJP")
+        val scheduleId = "0JETAVJVH0SJP"
+        val seatId = "0JETAVJVH0SJP"
+        val concertId = "0JETAVJVH0SJP"
+
+        val concert = Concert(
+            id = concertId,
+            name = "검정치마 콘서트"
+        )
+        concertRepository.save(concert)
+
+        val concertSchedule = ConcertSchedule(
+            id = scheduleId,
+            concert = concert,
+            date = LocalDateTime.of(2025, 2, 20, 18, 0),
+            totalSeatCount = 20
+        )
+        concertScheduleRepository.save(concertSchedule)
+
+        val seat = Seat(
+            id = seatId,
+            number = 1,
+            price = 12000,
+            concertSchedule = concertSchedule
+        )
+        seatRepository.save(seat)
+
+        // when
+        val taskCount = 2
+        val successCount = AtomicInteger(0)
+        val failureCount = AtomicInteger(0)
+        val futureArray = Array(taskCount) { index ->
+            CompletableFuture.runAsync {
+                try {
+                    reservationService.reserveConcert(
+                        ReservationCommand(
+                            userIdList[index % userIdList.size],
+                            scheduleId,
+                            seatId
+                        )
+                    )
+                    successCount.incrementAndGet()
+                } catch (e: Exception) {
+                    failureCount.incrementAndGet()
+                }
+            }
+        }
+        CompletableFuture.allOf(*futureArray).join()
+
+        // then
+        Assertions.assertEquals(1, successCount.get())
+        Assertions.assertEquals(1, failureCount.get())
     }
 }
